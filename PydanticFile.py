@@ -7,3 +7,7 @@ class UserCreate(BaseModel):
     username: str
     password: str
     created_at: Optional[datetime] = None
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
