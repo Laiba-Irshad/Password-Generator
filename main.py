@@ -6,7 +6,7 @@ import psycopg2
 from fastapi import FastAPI, HTTPException
 import hashlib
 from ValidPass import is_strong_password
-from PydanticFile import UserCreate
+from PydanticFile import UserCreate, UserLogin
 from db import connect_db , create_users_table
 
 app = FastAPI()
@@ -41,3 +41,26 @@ async def create_account(user: UserCreate):
         conn.close()
 
     return {"message": "Account Created Successfully!"}
+
+@app.post("/login")
+async def login(user: UserLogin):
+    username = user.username
+    password = user.password
+
+    hashed_password = hashlib.sha256(password.encode()).hexdigest()
+
+    conn = connect_db()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("SELECT password FROM users WHERE username = %s",(username,))
+        result = cursor.fetchone()
+        if result and result[0] == hashed_password:
+            return {"message" : "Login Successful!" , "username" : username}
+        else:
+            raise HTTPException(status_code=401, detail="Invalid Username or password")
+        
+    finally:
+        cursor.close()
+        conn.close()
+
