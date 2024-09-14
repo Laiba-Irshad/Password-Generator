@@ -6,7 +6,7 @@ import psycopg2
 from fastapi import FastAPI, HTTPException
 import hashlib
 from ValidPass import is_strong_password
-from PydanticFile import UserCreate, UserLogin
+from PydanticFile import UserCreate, UserLogin, userResetPassword
 from db import connect_db , create_users_table
 
 app = FastAPI()
@@ -64,3 +64,39 @@ async def login(user: UserLogin):
         cursor.close()
         conn.close()
 
+@app.post("/reset-password")
+async def reset_password(user: userResetPassword):
+    username = user.username
+    current_password = user.current_password
+    new_password = user.new_password
+
+    hashed_current_password = hashlib.sha256(current_password.encode()).hexdigest()
+
+    conn = connect_db()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("SELECT password from users WHERE username = %s", (username,))
+        result = cursor.fetchone()
+
+        if not result:
+            raise HTTPException(status_code = 401, detail = "Username not found.")
+        
+        if result[0] != hashed_current_password:
+            raise HTTPException(status_code = 401, detail = "Current Password is incorrect.")
+        
+        if not is_strong_password(new_password):
+            raise HTTPException(
+                status_code = 400,
+                detail = "Password must be atleast 8 characters long, contain an uppercase letter, a lower case letter , a digit and a special character"
+            )
+        
+        hashed_new_password = hashlib.sha256(new_password.encode()).hexdigest()
+
+        cursor.execute("UPDATE users SET password = %s WHERE username = %s", (hashed_new_password,username))
+        conn.commit()
+    finally:
+        cursor.close()
+        conn.close()
+    
+    return {"message":"Password reset Successfully!"}

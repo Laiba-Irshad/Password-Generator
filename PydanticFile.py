@@ -11,3 +11,8 @@ class UserCreate(BaseModel):
 class UserLogin(BaseModel):
     username: str
     password: str
+
+class userResetPassword(BaseModel):
+    username:str
+    current_password:str
+    new_password:str
