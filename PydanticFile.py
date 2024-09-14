@@ -16,3 +16,8 @@ class userResetPassword(BaseModel):
     username:str
     current_password:str
     new_password:str
+
+class userDeleteRequest(BaseModel):
+    username:str
+    password:str
+    
