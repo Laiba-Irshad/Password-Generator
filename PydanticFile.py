@@ -21,3 +21,9 @@ class userDeleteRequest(BaseModel):
     username:str
     password:str
     
+class addPasswordRequest(BaseModel):
+    username:str
+    password:str
+    service:str
+    service_password:str
+    
