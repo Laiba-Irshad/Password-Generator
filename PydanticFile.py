@@ -27,3 +27,22 @@ class addPasswordRequest(BaseModel):
     service:str
     service_password:str
     
+class retrievePassword(BaseModel):
+    username:str
+    password:str
+    service:str
+    
+class updatePassword(BaseModel):
+    username:str
+    password:str
+    service:str
+    new_service_Password:str
+
+class deletePassword(BaseModel):
+    username:str
+    password:str
+    service:str
+
+class viewServices(BaseModel):
+    username:str
+    password:str
