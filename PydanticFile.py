@@ -1,48 +1,38 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime
 
 
-class UserCreate(BaseModel):
+class BaseUser(BaseModel):
     username: str
     password: str
-    created_at: Optional[datetime] = None
-
-class UserLogin(BaseModel):
-    username: str
-    password: str
-
-class userResetPassword(BaseModel):
-    username:str
-    current_password:str
-    new_password:str
-
-class userDeleteRequest(BaseModel):
-    username:str
-    password:str
     
-class addPasswordRequest(BaseModel):
-    username:str
-    password:str
-    service:str
-    service_password:str
-    
-class retrievePassword(BaseModel):
-    username:str
-    password:str
-    service:str
-    
-class updatePassword(BaseModel):
-    username:str
-    password:str
-    service:str
-    new_service_Password:str
+class UserCreate(BaseUser):
+    created_at: Optional[datetime] = Field(default_factory=datetime.now)
 
-class deletePassword(BaseModel):
-    username:str
-    password:str
-    service:str
+class UserLogin(BaseUser):
+    pass
 
-class viewServices(BaseModel):
-    username:str
-    password:str
+class UserResetPassword(BaseUser):
+    new_password: str
+
+class UserDeleteRequest(BaseUser):
+    pass
+
+class ServiceAction(BaseUser):
+    service: str
+
+class AddPasswordRequest(ServiceAction):
+    service_password: str
+    
+class RetrievePassword(ServiceAction):
+    pass
+
+class UpdatePassword(ServiceAction):
+    new_service_password: str
+
+class DeletePassword(ServiceAction):
+    pass 
+
+class ViewServices(ServiceAction):
+    pass
